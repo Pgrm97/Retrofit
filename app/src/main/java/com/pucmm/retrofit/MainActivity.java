@@ -1,5 +1,6 @@
 package com.pucmm.retrofit;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -30,37 +31,16 @@ public class MainActivity extends AppCompatActivity {
     private List<Comment> elements_comment;
 
     @Override
+    public void onBackPressed() {
+        CallPost();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recycle_view);
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://jsonplaceholder.typicode.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        Call<List<Post>> listCall = retrofit.create(APIService.class).getPosts();
-
-        listCall.enqueue(new Callback<List<Post>>() {
-
-            @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                elements = response.body();
-
-                PostAdapter adapter = new PostAdapter();
-
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
-                Log.e("onFailure: ", t.getMessage());
-            }
-        });
+        CallPost();
     }
 
     private class PostAdapterComment extends RecyclerView.Adapter<PostAdapterComment.MyViewHolderComment> implements Serializable{
@@ -179,5 +159,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void CallPost(){
+        recyclerView = findViewById(R.id.recycle_view);
+
+
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://jsonplaceholder.typicode.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Call<List<Post>> listCall = retrofit.create(APIService.class).getPosts();
+
+        listCall.enqueue(new Callback<List<Post>>() {
+
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                elements = response.body();
+
+                PostAdapter adapter = new PostAdapter();
+
+                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Log.e("onFailure: ", t.getMessage());
+            }
+        });
     }
 }
